@@ -11,6 +11,13 @@ class MoviesController < ApplicationController
   end
 
   def index
+    #debugger
+    @all_ratings = Movie.all_ratings
+    if params[:ratings].nil?
+      @filter = Hash[@all_ratings.collect{|rating| [rating, true]}] 
+    else
+      @filter = Hash[params[:ratings].keys.collect{|rating| [rating, true]}]
+    end
     if params[:sort] == 'title'
       @sort_column = :title
       @movies = Movie.all.order(:title)
@@ -19,7 +26,7 @@ class MoviesController < ApplicationController
       @movies = Movie.all.order(:release_date)
     else
       @sort_column = nil
-      @movies = Movie.all
+      @movies = Movie.all.where rating: @filter.keys
     end
   end
 
