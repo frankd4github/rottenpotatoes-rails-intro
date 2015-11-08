@@ -14,29 +14,18 @@ class MoviesController < ApplicationController
     # debugger
     @all_ratings = Movie.all_ratings
     redirect = false
-    if params[:ratings].nil?
-      if session[:ratings].nil?
-        @ratings = Hash[@all_ratings.collect{|rating| [rating, 1]}]
-        session[:ratings] = @ratings
-      else
-        @ratings = session[:ratings]
-        redirect = true
-      end
-    else
-      @ratings = params[:ratings]
-      session[:ratings] = @ratings
-    end
-    if params[:sort].nil?
-      if session[:sort].nil?
-        @sort = nil
-      else
-        @sort = session[:sort]
-        redirect = true
-      end
-    else
-      @sort = params[:sort].to_sym
-      session[:sort] = @sort
-    end
+    @ratings = params[:ratings] || 
+      session[:ratings] ||
+      Hash[@all_ratings.collect{|rating| [rating, 1]}]
+    redirect ||= params[:ratings].nil? and not session[:ratings].nil?
+    session[:ratings] = @ratings
+    
+    @sort = params[:sort] ||
+      session[:sort] ||
+      nil
+    redirect ||= params[:sort].nil? and not session[:sort].nil?
+    session[:sort] = @sort
+    
     if redirect
       redirect_to movies_path(ratings: @ratings, sort: @sort)
     else
