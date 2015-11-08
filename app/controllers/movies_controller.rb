@@ -11,22 +11,36 @@ class MoviesController < ApplicationController
   end
 
   def index
-    #debugger
+    # debugger
     @all_ratings = Movie.all_ratings
+    redirect = false
     if params[:ratings].nil?
-      @filter = Hash[@all_ratings.collect{|rating| [rating, true]}] 
+      if session[:ratings].nil?
+        @ratings = Hash[@all_ratings.collect{|rating| [rating, 1]}]
+        session[:ratings] = @ratings
+      else
+        @ratings = session[:ratings]
+        redirect = true
+      end
     else
-      @filter = Hash[params[:ratings].keys.collect{|rating| [rating, true]}]
+      @ratings = params[:ratings]
+      session[:ratings] = @ratings
     end
-    if params[:sort] == 'title'
-      @sort_column = :title
-      @movies = Movie.all.order(:title)
-    elsif params[:sort] == 'release_date'
-      @sort_column = :release_date
-      @movies = Movie.all.order(:release_date)
+    if params[:sort].nil?
+      if session[:sort].nil?
+        @sort = nil
+      else
+        @sort = session[:sort]
+        redirect = true
+      end
     else
-      @sort_column = nil
-      @movies = Movie.all.where rating: @filter.keys
+      @sort = params[:sort].to_sym
+      session[:sort] = @sort
+    end
+    if redirect
+      redirect_to movies_path(ratings: @ratings, sort: @sort)
+    else
+      @movies = Movie.all.order(@sort).where rating: @ratings.keys
     end
   end
 
