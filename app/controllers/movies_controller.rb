@@ -11,7 +11,7 @@ class MoviesController < ApplicationController
   end
 
   def index
-    debugger
+    # debugger
     @all_ratings = Movie.all_ratings
     redirect = false
     @ratings = params[:ratings] || 
