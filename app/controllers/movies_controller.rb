@@ -11,19 +11,19 @@ class MoviesController < ApplicationController
   end
 
   def index
-    # debugger
+    debugger
     @all_ratings = Movie.all_ratings
     redirect = false
     @ratings = params[:ratings] || 
       session[:ratings] ||
       Hash[@all_ratings.collect{|rating| [rating, 1]}]
-    redirect ||= params[:ratings].nil? and not session[:ratings].nil?
+    redirect ||= params[:ratings].nil? && ! session[:ratings].nil?
     session[:ratings] = @ratings
     
     @sort = params[:sort] ||
       session[:sort] ||
       nil
-    redirect ||= params[:sort].nil? and not session[:sort].nil?
+    redirect ||= params[:sort].nil? && ! session[:sort].nil?
     session[:sort] = @sort
     
     if redirect
